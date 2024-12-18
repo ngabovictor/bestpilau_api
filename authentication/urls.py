@@ -13,6 +13,7 @@ routes.register('auth', authentication.AuthViewSet, basename='auth')
 routes.register('account', accounts.AccountViewSet, basename='account')
 routes.register('admin-utils', admin_views.AdminViewSet, basename='admin-utils')
 routes.register('user-preferences/saved-addresses', preferences.SavedAddressViewset, basename='saved-addresses')
+routes.register('users', accounts.UsersViewSet, basename='users')
 
 urlpatterns = [
     path('', include(routes.urls)),

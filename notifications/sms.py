@@ -1,8 +1,12 @@
 
 import os
+from typing import List
+from .fdi import FDISmsClient
+
+fdi_sms_client = FDISmsClient()
 
 
-def send_sms_task(message, phone_numbers, sender_id=None):
+def send_sms_task(message: str, phone_numbers: List[str], sender_id: str = None):
     """
     :param list[str] phone_numbers: Recipient phone numbers (should not start with a +)
     :param str message: SMS Message to be sent
@@ -23,8 +27,7 @@ def send_sms_task(message, phone_numbers, sender_id=None):
                 international_numbers.append(phone_number)
 
         if len(local_numbers) > 0:
-            if not sender_id:
-                pass
+            fdi_sms_client.send_bulk_notification(message, local_numbers)
 
         if len(international_numbers) > 0:
             print("Sending sms to international phone numbers")

@@ -14,6 +14,7 @@ from utils.fields import JSONSchemaField, LOCATION_DEFINITION_SCHEMA
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     is_rider = models.BooleanField(default=False)
+    rider_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
 
     class Meta:
         db_table = 'auth_user'

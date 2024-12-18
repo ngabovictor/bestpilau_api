@@ -10,9 +10,6 @@ class ProductCategory(BaseModel):
     name = models.CharField(max_length=255, null=False, blank=False)
     image = models.ImageField(upload_to='product_category_images', null=True, blank=True)
     caption = models.CharField(max_length=255, null=True, blank=True)
-    parent = models.ForeignKey('self', related_name='category', on_delete=models.SET_NULL,
-                               null=True, blank=True)
-    vendor = models.UUIDField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Product Categories"

@@ -43,6 +43,7 @@ class Order(BaseModel):
         default='PENDING'
     )
     notes = models.TextField(null=True, blank=True)
+    cancelled_reason = models.TextField(null=True, blank=True)
     estimated_completion_time = models.DateTimeField(null=True, blank=True)
     coupon = models.ForeignKey('coupons.Coupon', related_name='orders', on_delete=models.SET_NULL, null=True, blank=True)
 

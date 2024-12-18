@@ -33,6 +33,7 @@ urlpatterns = [
     path('', include('outlets.urls')),
     path('', include('products.urls')),
     path('', include('coupons.urls')),
+    path('', include('publications.urls')),
 ]
 
 if settings.DEBUG:

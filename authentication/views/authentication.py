@@ -105,3 +105,28 @@ class AuthViewSet(ViewSet):
             },  # Use the custom serializer
             'user': UserSerializer(user, context={'request': request}).data
         }, status=status.HTTP_200_OK)
+        
+    @action(methods=['POST'], detail=False, name='login', url_name='login', url_path='login')
+    def password_login(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        if not username or not password:
+            return Response(data={"message": "Username and/or password was not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.filter(username=username, is_active=True).first()
+
+        
+        if not user or not user.check_password(password):
+            return Response(data={"message": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({
+            'tokens': {
+                "access_token": str(token.key),
+                "refresh_token": None,
+                "token_type": "Token",
+            },  # Use the custom serializer
+            'user': UserSerializer(user, context={'request': request}).data
+        }, status=status.HTTP_200_OK)

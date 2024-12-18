@@ -4,10 +4,10 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSet, ModelViewSet
 
 from authentication.serializers.user_serializer import UserSerializer
-
+from authentication.models import User
 logger = logging.getLogger(__name__)
 
 
@@ -44,4 +44,30 @@ class AccountViewSet(ViewSet):
         serializer = UserSerializer(instance=request.user, context=context)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class UsersViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    
+    filterset_fields = ['email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_rider']
+    search_fields = ['email', 'first_name', 'last_name']
+    ordering_fields = ['email', 'first_name', 'last_name', 'created_at', 'updated_at']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        workers_only = self.request.query_params.get('workers_only', False)
+        
+        if workers_only:
+            queryset = queryset.filter(is_rider=False, outlets__isnull=False).distinct()
+            
+        is_rider = self.request.query_params.get('is_rider', False)
+        
+        if not is_rider:
+            queryset = queryset.exclude(is_rider=True)
+            
+        return queryset
+    
 

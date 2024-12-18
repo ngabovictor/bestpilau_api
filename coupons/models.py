@@ -18,10 +18,12 @@ class Coupon(BaseModel):
     )
     allowed_users = models.ManyToManyField('authentication.User', related_name='coupons', blank=True)
     max_uses = models.PositiveIntegerField(default=1, null=True, blank=True)
+    uses = models.PositiveIntegerField(default=0, null=True, blank=True)
     allowed_outlets = models.ManyToManyField('outlets.Outlet', related_name='coupons', blank=True)
     all_users_allowed = models.BooleanField(default=False)
     all_outlets_allowed = models.BooleanField(default=False)
-    expires_at = models.DateTimeField()
+    effective_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.code

@@ -76,7 +76,7 @@ LOCATION_DEFINITION_SCHEMA = {
         "latitude": {"type": "number"},
         "longitude": {"type": "number"}
     },
-    "required": ["address", "latitude", "longitude", "name"],
+    "required": ["address", "latitude", "longitude"],
 }
 
 

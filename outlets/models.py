@@ -28,6 +28,7 @@ WORKING_HOURS_DEFINITION_SCHEMA = {
 
 class Outlet(BaseModel):
     name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='outlets_images', null=True,)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     is_open = models.BooleanField(default=True)

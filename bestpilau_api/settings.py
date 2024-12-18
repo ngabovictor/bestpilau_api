@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'payments',
     'outlets',
     'coupons',
+    'publications'
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Kigali'
 
 USE_I18N = True
 
@@ -158,7 +159,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
         'rest_framework.filters.SearchFilter',
         'django_filters.rest_framework.DjangoFilterBackend',
-    )
+    ),
+    'DEFAULT_FILTER_CLASS': 'utils.filters.DynamicModelFilter',
 }
 
 SIMPLE_JWT = {
