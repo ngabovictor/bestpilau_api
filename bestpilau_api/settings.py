@@ -91,6 +91,15 @@ DATABASES = {
     )
 }
 
+GS_CLOUD_SQL_CONNECTION_NAME = os.environ.get("GS_CLOUD_SQL_CONNECTION_NAME")
+
+if GS_CLOUD_SQL_CONNECTION_NAME:
+    DATABASES["default"]["HOST"] = GS_CLOUD_SQL_CONNECTION_NAME
+
+    try:
+        del DATABASES["default"]["PORT"]
+    except:
+        pass
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
