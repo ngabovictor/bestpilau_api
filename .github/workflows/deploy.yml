@@ -1,0 +1,72 @@
+name: Deploy Best Pilau API
+
+on:
+  push:
+    tags:
+      - "v*" # Runs on tags starting with 'v' (e.g., v1.0.0)
+
+env:
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  REGION: ${{ secrets.REGION }}
+  ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
+  ARTIFACTORY_REPO: ${{ secrets.ARTIFACTORY_REPO }}
+  APP_NAME: ${{ secrets.APP_NAME}}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Authenticate gcloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.PROJECT_ID }} # Use the env variable here
+
+      - name: Build and Push to Artifactory (with both tags)
+        run: |-
+          gcloud builds submit \
+            --tag $ARTIFACTORY_URL/$ARTIFACTORY_REPO$APP_NAME:latest .
+
+      # (Combined Authorize and Push steps)
+#      - name: Authorize Docker and Push to Artifactory
+#        run: |-
+#          gcloud auth configure-docker $ARTIFACTORY_URL
+#          docker push $ARTIFACTORY_URL/$ARTIFACTORY_REPO$APP_NAME:latest
+#          docker push $ARTIFACTORY_URL/$ARTIFACTORY_REPO$APP_NAME:$GITHUB_SHA
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service: ${{ secrets.APP_NAME }}
+          image: ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.ARTIFACTORY_REPO }}:latest
+          region: ${{ secrets.REGION }}
+          flags: --allow-unauthenticated
+          secrets: |
+            DJANGO_SECRET_KEY=${{ secrets.BP_API_DJANGO_SECRET_KEY }}:latest
+            DEBUG=${{ secrets.BP_API_DEBUG }}:latest
+            ALLOWED_HOSTS=${{ secrets.BP_API_ALLOWED_HOSTS }}:latest
+            CSRF_TRUSTED_ORIGINS=${{ secrets.BP_API_CSRF_TRUSTED_ORIGINS }}:latest
+            DATABASE_URL=${{ secrets.BP_API_DATABASE_URL }}:latest
+            CORS_ORIGIN_WHITELIST=${{ secrets.BP_API_CORS_ORIGIN_WHITELIST }}:latest
+            APP_HOST=${{ secrets.BP_API_APP_HOST }}:latest
+            ADMIN_USERNAME=${{ secrets.BP_API_ADMIN_USERNAME }}:latest
+            ADMIN_PASSWORD=${{ secrets.BP_API_ADMIN_PASSWORD }}:latest
+            REDIS_URL=${{ secrets.BP_API_REDIS_URL }}:latest
+            PAYMENT_FDI_SECRET_KEY=${{ secrets.BP_API_PAYMENT_FDI_SECRET_KEY }}:latest
+            PAYMENT_FDI_ACCOUNT_ID=${{ secrets.BP_API_PAYMENT_FDI_ACCOUNT_ID }}:latest
+            PAYMENT_FDI_APP_ID=${{ secrets.BP_API_PAYMENT_FDI_APP_ID }}:latest
+            PAYMENT_FDI_BASE_URL=${{ secrets.BP_API_PAYMENT_FDI_BASE_URL }}:latest
+            PAYMENT_FDI_CALLBACK_URL=${{ secrets.BP_API_PAYMENT_FDI_CALLBACK_URL }}:latest
+            NOTIFICATION_FDI_SECRET_KEY=${{ secrets.BP_API_NOTIFICATION_FDI_SECRET_KEY }}:latest
+            NOTIFICATION_FDI_ACCOUNT_ID=${{ secrets.BP_API_NOTIFICATION_FDI_ACCOUNT_ID }}:latest
+            NOTIFICATION_FDI_SENDER_ID=${{ secrets.BP_API_NOTIFICATION_FDI_SENDER_ID }}:latest
+            NOTIFICATION_FDI_BASE_URL=${{ secrets.BP_API_NOTIFICATION_FDI_BASE_URL }}:latest
