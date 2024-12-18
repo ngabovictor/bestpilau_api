@@ -33,7 +33,7 @@ jobs:
       - name: Build and Push to Artifactory (with both tags)
         run: |-
           gcloud builds submit \
-            --tag $ARTIFACTORY_URL/$ARTIFACTORY_REPO$APP_NAME:latest .
+            --tag $ARTIFACTORY_URL/$ARTIFACTORY_REPO:latest .
 
       # (Combined Authorize and Push steps)
 #      - name: Authorize Docker and Push to Artifactory
