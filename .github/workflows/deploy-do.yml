@@ -1,0 +1,48 @@
+name: Build and Push Docker Best Pilau API Image to DigitalOcean
+
+on:
+  push:
+    tags:
+      - "v*" # Runs on tags starting with 'v' (e.g., v1.0.0)
+
+env:
+  APP_NAME: ${{ secrets.APP_NAME}}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  DEBUG: ${{ secrets.DEBUG }}
+  ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+  CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  CORS_ORIGIN_WHITELIST: ${{ secrets.CORS_ORIGIN_WHITELIST }}
+  APP_HOST: ${{ secrets.APP_HOST }}
+  ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+  REDIS_URL: ${{ secrets.REDIS_URL }}
+  GS_CLOUD_SQL_CONNECTION_NAME: ${{ secrets.GS_CLOUD_SQL_CONNECTION_NAME }}
+  PAYMENT_FDI_SECRET_KEY: ${{ secrets.PAYMENT_FDI_SECRET_KEY }}
+  PAYMENT_FDI_ACCOUNT_ID: ${{ secrets.PAYMENT_FDI_ACCOUNT_ID }}
+  PAYMENT_FDI_APP_ID: ${{ secrets.PAYMENT_FDI_APP_ID }}
+  PAYMENT_FDI_BASE_URL: ${{ secrets.PAYMENT_FDI_BASE_URL }}
+  PAYMENT_FDI_CALLBACK_URL: ${{ secrets.PAYMENT_FDI_CALLBACK_URL }}
+  NOTIFICATION_FDI_SECRET_KEY: ${{ secrets.NOTIFICATION_FDI_SECRET_KEY }}
+  NOTIFICATION_FDI_ACCOUNT_ID: ${{ secrets.NOTIFICATION_FDI_ACCOUNT_ID }}
+  NOTIFICATION_FDI_SENDER_ID: ${{ secrets.NOTIFICATION_FDI_SENDER_ID }}
+  NOTIFICATION_FDI_BASE_URL: ${{ secrets.NOTIFICATION_FDI_BASE_URL }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Log in to DigitalOcean Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DIGITALOCEAN_REGISTRY_URL }}
+          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Build and push the Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DIGITALOCEAN_REGISTRY_URL }}/$APP_NAME:latest #registry.digitalocean.com/your-registry
