@@ -29,7 +29,7 @@ class OrderViewSet(ModelViewSet):
 
         if user.is_authenticated:
             # Get orders where user is the customer
-            customer_orders = queryset.filter(customer=user) | queryset.filter(created_by=user)
+            customer_orders = queryset.filter(customer=user) | queryset.filter(created_by=user) | queryset.filter(assigned_rider=user)
             # Get orders from outlets where user works
             worker_orders = queryset.filter(outlet__workers=user)
             

@@ -58,6 +58,9 @@ class OrderSerializer(ModelSerializer):
                 'last_name': obj.assigned_rider.last_name
             }
         
+        # Add payment status based on successful transactions
+        representation['is_paid'] = obj.transactions.filter(status='COMPLETED').exists()
+        
         return representation
 
     def validate(self, data):

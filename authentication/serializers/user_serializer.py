@@ -10,6 +10,7 @@ class UserSerializer(ModelSerializer):
     def to_representation(self, instance):
         serialized_data = super(UserSerializer, self).to_representation(instance)
         serialized_data['outlets'] = instance.outlets.all().values('id', 'name')
+        serialized_data['can_use_dashboard'] = instance.is_staff or instance.outlets.exists()
         return serialized_data
     
     
