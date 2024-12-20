@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 ]
 
 USE_WHITENOISE = os.environ.get('USE_WHITENOISE', False)
-
+USE_S3_BOTO3_STORAGE = os.environ.get('USE_S3_BOTO3_STORAGE', False)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -147,6 +147,16 @@ MEDIA_URL = "/media/"
 
 if USE_WHITENOISE:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+
+if USE_S3_BOTO3_STORAGE:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
