@@ -36,6 +36,6 @@ urlpatterns = [
     path('', include('publications.urls')),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG and not settings.USE_S3_BOTO3_STORAGE:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
