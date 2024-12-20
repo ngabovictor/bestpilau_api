@@ -83,7 +83,7 @@ class ProductViewSet(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    def update(self, request, *args, **kwargs):
+    def update(self, request, pk=None, *args, **kwargs):
         if 'image' in request.data and request.data['image']:
             # Get the base64 encoded image data
             image_data = request.data['image']
@@ -110,7 +110,7 @@ class ProductViewSet(ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def partial_update(self, request, *args, **kwargs):
+    def partial_update(self, request, pk=None, *args, **kwargs):
         if 'image' in request.data and request.data['image']:
             # Get the base64 encoded image data
             image_data = request.data['image']

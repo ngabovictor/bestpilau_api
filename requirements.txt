@@ -3,6 +3,8 @@ asgiref==3.8.1
 async-timeout==5.0.1
 attrs==24.2.0
 billiard==4.2.1
+boto3==1.35.85
+botocore==1.35.85
 celery==5.4.0
 certifi==2024.12.14
 cfgv==3.4.0
@@ -31,6 +33,7 @@ h11==0.14.0
 identify==2.6.3
 idna==3.10
 inflection==0.5.1
+jmespath==1.0.1
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
 kombu==5.4.2
@@ -51,6 +54,7 @@ redis==5.2.0
 referencing==0.35.1
 requests==2.32.3
 rpds-py==0.22.0
+s3transfer==0.10.4
 schema==0.7.7
 six==1.16.0
 sqlparse==0.5.2
