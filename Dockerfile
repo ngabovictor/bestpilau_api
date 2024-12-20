@@ -17,4 +17,7 @@ RUN apt-get update && \
 # Copy Nginx configuration file
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Expose port 80 for Nginx
+EXPOSE 80
+
 CMD ["/app/entrypoint.sh"]
