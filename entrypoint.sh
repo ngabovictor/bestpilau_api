@@ -6,11 +6,5 @@ cd /app/
 /opt/venv/bin/python manage.py collectstatic --noinput
 #/opt/venv/bin/gunicorn --worker-tmp-dir /dev/shm dropahub_api.wsgi:application --bind "0.0.0.0:${APP_PORT}"
 
-# Start Uvicorn in the background
-/opt/venv/bin/uvicorn bestpilau_api.asgi:application --host 0.0.0.0 --port "${APP_PORT}" --workers 4 & 
-
-# Wait for Uvicorn to start
-sleep 5
-
-# Start Nginx in the foreground
-nginx -g 'daemon off;'
+# Start Uvicorn
+/opt/venv/bin/uvicorn bestpilau_api.asgi:application --host 0.0.0.0 --port "${APP_PORT}" --workers 4
