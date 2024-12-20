@@ -9,4 +9,12 @@ RUN /opt/venv/bin/pip install pip --upgrade && \
     /opt/venv/bin/pip install -r requirements.txt && \
     chmod +x entrypoint.sh
 
+# Install Nginx
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 CMD ["/app/entrypoint.sh"]
