@@ -37,6 +37,10 @@ class StatsViewSet(ViewSet):
             created_at__range=(week_start, week_end)
         ).aggregate(total=Sum('amount'))
 
+        # Convert Decimal amounts to float for calculations
+        today_amount = float(today_transactions['total'] or 0)
+        week_amount = float(week_transactions['total'] or 0)
+
         # Get orders stats
         today_orders = Order.objects.filter(
             created_at__range=(today_start, today_end)
@@ -56,9 +60,9 @@ class StatsViewSet(ViewSet):
 
         response_data = {
             'transactions': {
-                'today': today_transactions['total'] or 0,
-                'this_week': week_transactions['total'] or 0,
-                'commissions': (today_transactions['total'] or 0) * 0.02  # 2% commission
+                'today': today_amount,
+                'this_week': week_amount,
+                'commissions': today_amount * 0.02  # 2% commission
             },
             'orders': {
                 'today': today_orders.count(),
