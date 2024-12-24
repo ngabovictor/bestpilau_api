@@ -95,14 +95,20 @@ def handle_fdi_callback(data: dict):
         
 def verify_transaction(transaction: Transaction):
     response = fdi_client.check_payment_status(str(transaction.id))
+    order = transaction.order
     
     if response['status'] == 'successful':
         transaction.status = 'COMPLETED'
         transaction.gw_request_callback = response
         transaction.save()
+        order.status = 'CONFIRMED'
+        order.save()
     elif response['status'] == 'fail':
         transaction.status = 'FAILED'
         transaction.gw_request_callback = response
         transaction.save()
+        order.status = 'CANCELLED'
+        order.cancelled_reason = 'Payment failed: {}'.format(response['channel_message'])
+        order.save()
         
     return transaction
