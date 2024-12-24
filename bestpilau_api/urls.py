@@ -34,6 +34,7 @@ urlpatterns = [
     path('', include('products.urls')),
     path('', include('coupons.urls')),
     path('', include('publications.urls')),
+    path('', include('stats.urls')),
 ]
 
 if settings.DEBUG and not eval(settings.USE_S3_BOTO3_STORAGE):

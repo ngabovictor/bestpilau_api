@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'payments',
     'outlets',
     'coupons',
-    'publications'
+    'publications',
+    'stats',
 ]
 
 USE_WHITENOISE = os.environ.get('USE_WHITENOISE', False)
