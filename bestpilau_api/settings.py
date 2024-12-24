@@ -184,6 +184,7 @@ if eval(USE_S3_BOTO3_STORAGE):
                 "region_name": AWS_S3_REGION_NAME,
                 "object_parameters": AWS_S3_OBJECT_PARAMETERS,
                 "location": AWS_LOCATION,
+                "default_acl": "public-read",
             },
         }
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.cdn.digitaloceanspaces.com/{AWS_STORAGE_BUCKET_NAME}'
