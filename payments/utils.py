@@ -60,7 +60,7 @@ def handle_fdi_callback(data: dict):
     transaction_data = data.get('data', {})
     transaction_state = transaction_data.get('state')
     transaction_id = transaction_data.get('trxRef')
-    reference_id = transaction_data.get('trxRef')
+    reference_id = transaction_data.get('gwRef')
     
     # Get transaction by both reference_id and id
     transaction = Transaction.objects.filter(
