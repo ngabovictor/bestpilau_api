@@ -35,5 +35,6 @@ class TransactionViewSet(ReadOnlyModelViewSet):
 class FdiCallbackView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
+        print(request.data)
         PaymentUtil.handle_fdi_callback(request.data)
         return Response({'message': 'Callback received'}, status=200)
