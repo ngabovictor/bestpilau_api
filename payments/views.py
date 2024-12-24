@@ -1,5 +1,5 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Transaction
 from .serializers import TransactionSerializer
@@ -33,6 +33,7 @@ class TransactionViewSet(ReadOnlyModelViewSet):
 
 
 class FdiCallbackView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         PaymentUtil.handle_fdi_callback(request.data)
         return Response({'message': 'Callback received'}, status=200)
