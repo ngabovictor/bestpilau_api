@@ -35,7 +35,7 @@ class OutletViewSet(ModelViewSet):
                 charset=None
             )
             request.data['image'] = image_file
-        serializer = self.get_serializer(self.get_object(), data=request.data, partial=True)
+        serializer = self.get_serializer(data=request.data, partial=False)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
