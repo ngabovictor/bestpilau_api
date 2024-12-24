@@ -91,3 +91,18 @@ def handle_fdi_callback(data: dict):
             order.status = 'CANCELLED'
             order.cancelled_reason = 'Payment failed: {}'.format(transaction_data.get('message', 'Unknown error'))
         order.save()
+        
+        
+def verify_transaction(transaction: Transaction):
+    response = fdi_client.check_payment_status(str(transaction.id))
+    
+    if response['status'] == 'successful':
+        transaction.status = 'COMPLETED'
+        transaction.gw_request_callback = response
+        transaction.save()
+    elif response['status'] == 'fail':
+        transaction.status = 'FAILED'
+        transaction.gw_request_callback = response
+        transaction.save()
+        
+    return transaction

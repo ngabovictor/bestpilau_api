@@ -113,7 +113,7 @@ class FDIClient:
         response.raise_for_status()
         response_data = response.json()
         return {
-            'transaction_id': response_data['data']['id'],
+            'transaction_id': transaction_id,
             'reference': response_data['data']['trxRef'], 
             'status': response_data['data']['trxStatus'],
             'channel_status': response_data['data']['channelTrxStatus'],
