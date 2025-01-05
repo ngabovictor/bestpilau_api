@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from .models import Product, ProductCategory
 from .serializers import ProductSerializer, ProductCategorySerializer
@@ -35,7 +35,7 @@ class ProductCategoryViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.filter(state=True)
     serializer_class = ProductSerializer 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     search_fields = ['name', 'description', 'category__name']
     filterset_fields = ['outlet', 'category', 'is_available']
     ordering = ['-created_at']
@@ -43,6 +43,9 @@ class ProductViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = Product.objects.filter(state=True)
         user = self.request.user
+        
+        if user.is_anonymous:
+            return queryset
 
         if user.is_staff:
             return queryset

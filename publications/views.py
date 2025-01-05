@@ -13,4 +13,4 @@ from .serializers import PubSerializer
 class PubViewSet(ModelViewSet):
     queryset = Pub.objects.filter(state=True)
     serializer_class = PubSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
