@@ -12,7 +12,7 @@ from rest_framework import status
 class OutletViewSet(ModelViewSet):
     queryset = Outlet.objects.all()
     serializer_class = OutletSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     
     def create(self, request, *args, **kwargs):
         if 'image' in request.data and request.data['image']:
