@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
+from orders.filters import OrderFilter
 from utils.filters import DynamicModelFilter
 
 from .models import Order
@@ -14,9 +15,9 @@ class OrderViewSet(ModelViewSet):
     queryset = Order.objects.none()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
-    filterset_fields = ['outlet', 'customer', 'status', 'assigned_rider', 'created_by', 'created_at',]
-    filter_class = DynamicModelFilter
-    search_fields = ['customer__email', 'customer__first_name', 'customer__last_name', 'order_number']
+    # filterset_fields = ['outlet', 'customer', 'status__in', 'assigned_rider', 'created_by', 'created_at__lte', 'created_at__gte', 'reference_code',]
+    filterset_class = OrderFilter
+    search_fields = ['customer__email', 'customer__first_name', 'customer__last_name', 'reference_code']
     ordering_fields = ['created_at', 'total_amount', 'status', 'payment_status']
     ordering = ['-created_at']
     
