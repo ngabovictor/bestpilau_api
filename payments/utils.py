@@ -111,4 +111,12 @@ def verify_transaction(transaction: Transaction):
         order.cancelled_reason = 'Payment failed: {}'.format(response['channel_message'])
         order.save()
         
+        # Revert coupon used
+        
+        coupon = order.coupon
+        
+        if coupon:
+            coupon.uses = int(coupon.uses) - 1
+            coupon.save()
+        
     return transaction
