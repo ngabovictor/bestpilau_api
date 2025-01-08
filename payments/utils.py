@@ -1,3 +1,4 @@
+from notifications.sms import send_sms_task
 from orders.models import Order
 from payments.fdi import FDIClient
 import uuid
@@ -103,6 +104,17 @@ def verify_transaction(transaction: Transaction):
         transaction.save()
         order.status = 'CONFIRMED'
         order.save()
+        
+        # Send notification to outlet worker/admins if order is confirmed
+        
+        message = f'New order received! Order ID: {order.reference_code}. Customer phone: {order.customer.username}. Please check the dashboard for details and prepare it promptly.'
+        phone_numbers = [worker.username for worker in order.outlet.workers.all() if worker.username.startswith(('+250', '250', '07'))]
+        
+        if order.outlet.phone_number:
+            phone_numbers.append(order.outlet.phone_number)
+        
+        send_sms_task(message=message, phone_numbers=phone_numbers)
+        
     elif response['status'] == 'fail':
         transaction.status = 'FAILED'
         transaction.gw_request_callback = response

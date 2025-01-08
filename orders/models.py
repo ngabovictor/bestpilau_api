@@ -1,6 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 
+from notifications.sms import send_sms_task
 from utils.functions import generate_code
 from utils.models import BaseModel
 from utils.fields import LOCATION_DEFINITION_SCHEMA, JSONSchemaField
@@ -62,6 +63,15 @@ def post_save_order(sender, instance=None, created=False, **kwargs):
                 status=instance.status
             )
             tracker.save()
+            
+            # Send notification to the driver if order is assigned and ready to be delivered
+            if instance.status == 'READY' and instance.assigned_rider:
+                send_sms_task(message=f'Wahawe komande nshya! Nomero ya komande: #{instance.reference_code}. Numero y\'umukiriya: {instance.customer.username}, aderesi: {instance.delivery_address.get("address")}', phone_numbers=[instance.assigned_rider.username])
+            
+            # Send notification to customer if order is on the way
+            if instance.status == 'DELIVERING' and instance.assigned_rider:
+                send_sms_task(message=f'Your order from Best Pilau is on its way! {instance.assigned_rider.first_name} is delivering it. You can reach out at {instance.assigned_rider.username} if needed.', phone_numbers=[instance.customer.username])
+
 
 
 auditlog.register(Order)

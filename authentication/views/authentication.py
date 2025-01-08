@@ -15,6 +15,10 @@ from authentication.serializers.user_serializer import UserSerializer
 from utils.functions import generate_digits_code
 from notifications.sms import send_sms_task
 from rest_framework.authtoken.models import Token
+import os
+
+TEST_ACCOUNTS = os.getenv('API_TEST_ACCOUNTS', '').split(',')
+API_TEST_OTP = os.getenv('API_TEST_OTP', None)
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +39,7 @@ class AuthViewSet(ViewSet):
 
         logger.info("Generate OTP")
 
-        generated_code = generate_digits_code(length=4)
+        generated_code = API_TEST_OTP if API_TEST_OTP and username in TEST_ACCOUNTS  else generate_digits_code(length=4)
 
         otp = OTP(user=user)
         otp.set_code(generated_code)
@@ -88,10 +92,9 @@ class AuthViewSet(ViewSet):
             return Response(data={"message": "User with provided username is not found"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        token_serializer = JwtTokenObtainPairSerializer(data={
-            'username': str(username),
-            'code': code
-        })
+        if not OTP.objects.check_valid_otp(user=user, raw_code=code):
+            return Response(data={"message": "Invalid OTP"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         token, _ = Token.objects.get_or_create(user=user)
 
