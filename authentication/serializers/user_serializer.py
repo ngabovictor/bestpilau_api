@@ -27,3 +27,15 @@ class UserSerializer(ModelSerializer):
         if outlets is not None:
             user.outlets.set(outlets)
         return user
+
+
+class UserMiniSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email', 'username', 'is_rider', 'is_active', 'is_staff', 'outlets', 'rider_id')
+
+    def to_representation(self, instance):
+        serialized_data = super(UserSerializer, self).to_representation(instance)
+        serialized_data['outlets'] = []
+        serialized_data['can_use_dashboard'] = instance.is_staff or instance.outlets.exists()
+        return serialized_data

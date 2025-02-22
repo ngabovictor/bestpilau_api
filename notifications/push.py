@@ -1,5 +1,4 @@
 from orders.models import Order
-from orders.serializers import OrderSerializer
 from .onesignal import OneSignalClient, Notification
 
 onesignal_client = OneSignalClient()
