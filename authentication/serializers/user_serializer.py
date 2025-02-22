@@ -35,7 +35,7 @@ class UserMiniSerializer(ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'email', 'username', 'is_rider', 'is_active', 'is_staff', 'outlets', 'rider_id')
 
     def to_representation(self, instance):
-        serialized_data = super(UserSerializer, self).to_representation(instance)
+        serialized_data = super(UserMiniSerializer, self).to_representation(instance)
         serialized_data['outlets'] = []
         serialized_data['can_use_dashboard'] = instance.is_staff or instance.outlets.exists()
         return serialized_data
