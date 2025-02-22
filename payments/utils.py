@@ -4,6 +4,7 @@ from payments.fdi import FDIClient
 import uuid
 from payments.models import Transaction
 from payments.serializers import TransactionSerializer
+from notifications import push as push_notifications
 
 
 fdi_client = FDIClient()
@@ -88,6 +89,16 @@ def handle_fdi_callback(data: dict):
     if order.status == 'PENDING':
         if transaction_state == 'successful':
             order.status = 'CONFIRMED'
+            # Send notification to outlet worker/admins if order is confirmed
+        
+            message = f'New order received! Order ID: {order.reference_code}. Customer phone: {order.customer.username}. Please check the dashboard for details and prepare it promptly.'
+            phone_numbers = [worker.username for worker in order.outlet.workers.all() if worker.username.startswith(('+250', '250', '07'))]
+            
+            if order.outlet.phone_number:
+                phone_numbers.append(order.outlet.phone_number)
+            
+            send_sms_task(message=message, phone_numbers=phone_numbers)
+            push_notifications.send_order_notification(order)
         else:
             order.status = 'CANCELLED'
             order.cancelled_reason = 'Payment failed: {}'.format(transaction_data.get('message', 'Unknown error'))
