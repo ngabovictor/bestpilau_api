@@ -44,7 +44,7 @@ class OrderSerializer(ModelSerializer):
         representation = super().to_representation(obj)
         
         representation['customer'] = {
-            'id': obj.customer.id,
+            'id': str(obj.customer.id),
             'username': obj.customer.username,
             'first_name': obj.customer.first_name,
             'last_name': obj.customer.last_name
@@ -52,7 +52,7 @@ class OrderSerializer(ModelSerializer):
 
         if obj.assigned_rider:
             representation['assigned_rider'] = {
-                'id': obj.assigned_rider.id,
+                'id': str(obj.assigned_rider.id),
                 'username': obj.assigned_rider.username,
                 'first_name': obj.assigned_rider.first_name,
                 'last_name': obj.assigned_rider.last_name
@@ -60,6 +60,9 @@ class OrderSerializer(ModelSerializer):
         
         # Add payment status based on successful transactions
         representation['is_paid'] = obj.transactions.filter(status='COMPLETED').exists()
+        representation['outlet'] = str(obj.outlet.id)
+        representation['created_by'] = str(obj.created_by.id)
+        representation['created_by'] = str(obj.created_by.id)
         
         return representation
 

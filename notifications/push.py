@@ -1,41 +1,48 @@
-import os
-import uuid
-
-import onesignal
-from onesignal.api import default_api
-
 from orders.models import Order
+from orders.serializers import OrderSerializer
+from .onesignal import OneSignalClient, Notification
 
-# See configuration.py for a list of all supported configuration parameters.
-# Some of the OneSignal endpoints require USER_KEY bearer token for authorization as long as others require APP_KEY
-# (also knows as REST_API_KEY). We recommend adding both of them in the configuration page so that you will not need
-# to figure it yourself.
-configuration = onesignal.Configuration(
-    app_key = "NOTIFICATION_ONESIGNAL_APP_KEY",
-    user_key = "NOTIFICATION_ONESIGNAL_USER_KEY"
-)
-
-NOTIFICATION_ONESIGNAL_APP_ID = os.getenv("NOTIFICATION_ONESIGNAL_APP_ID")
-
-
-# Enter a context with an instance of the API client
-with onesignal.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = default_api.DefaultApi(api_client)
-    
+onesignal_client = OneSignalClient()
 
 def send_order_notification(order: Order):
-    notification = onesignal.Notification()
-    notification.set_attribute('app_id', NOTIFICATION_ONESIGNAL_APP_ID)
-    notification.set_attribute('external_id', str(uuid.uuid4()))
-    notification.set_attribute('is_android', True)
-    contentsStringMap = onesignal.StringMap()   
-    headingStringMap = onesignal.StringMap()   
-    headingStringMap.set_attribute('en', "New incoming order 👏")
-    contentsStringMap.set_attribute('en', f"You have received a new order #{order.reference_code}. Open it and process it as fast as possible 👀")
-    notification.set_attribute('contents', contentsStringMap)
-    notification.set_attribute('headings', headingStringMap)
-    outlet_users = order.outlet.workers.all()
-    notification.set_attribute('include_external_user_ids', [user.username for user in outlet_users])
+    notification = Notification()
 
-    notificationResponse = api_instance.create_notification(notification)
+    notification.set_attribute('contents', {
+        'en': f"You have received a new order #{order.reference_code}, from {order.customer.username}. Open it and process it as fast as possible 👀"
+    })
+    notification.set_attribute('headings', {
+        'en': "New incoming order 👏"
+    })
+    
+    notification.set_attribute('buttons', [
+        {
+            'id': 'view_order',
+            'text': 'View Order'
+        },
+        {
+            'id': 'start_processing',
+            'text': 'Start Processing'
+        },  
+    ])
+
+    notification.set_attribute('is_android', True)
+    
+    notification.set_attribute('included_segments', [
+        "Outlet users"
+    ])
+    
+    outlet_users = order.outlet.workers.all()
+    
+    notification.set_attribute('included_external_ids', [
+        user.username for user in outlet_users
+    ])
+    
+    notification.set_attribute('data', {
+        'order_id': str(order.id),
+        'outlet_id': str(order.outlet.id),
+        'customer_id': str(order.customer.id),
+    })
+
+    response = onesignal_client.send_notification(notification)
+
+    print(response)
