@@ -16,7 +16,10 @@ class UserSerializer(ModelSerializer):
     
     def create(self, validated_data):
         outlets = validated_data.pop('outlets', [])
-        user = super().create(validated_data)
+        try:
+            user = super().create(validated_data)
+        except:
+            user = User.objects.filter(username=validated_data.get("username")).first()
         if outlets:
             user.outlets.set(outlets)
         return user
