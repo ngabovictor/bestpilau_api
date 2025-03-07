@@ -1,9 +1,8 @@
-from orders.models import Order
 from .onesignal import OneSignalClient, Notification
 
 onesignal_client = OneSignalClient()
 
-def send_order_notification(order: Order):
+def send_workers_order_notification(order):
     notification = Notification()
 
     notification.set_attribute('contents', {
@@ -41,6 +40,33 @@ def send_order_notification(order: Order):
         'outlet_id': str(order.outlet.id),
         'customer_id': str(order.customer.id),
     })
+
+    response = onesignal_client.send_notification(notification)
+
+    print(response)
+
+
+def send_push_notification(subject: str, message: str, recipients: list, actions: list = [], data: dict = {}):
+    notification = Notification()
+
+    notification.set_attribute('contents', {
+        'en': message
+    })
+    notification.set_attribute('headings', {
+        'en': subject
+    })
+    
+    notification.set_attribute('buttons', actions)
+
+    notification.set_attribute('is_android', True)
+    notification.set_attribute('is_ios', True)
+    
+    notification.set_attribute('included_external_ids', recipients)
+    notification.set_attribute('included_segments', [
+        "Total Subscriptions"
+    ])
+    
+    notification.set_attribute('data', data)
 
     response = onesignal_client.send_notification(notification)
 

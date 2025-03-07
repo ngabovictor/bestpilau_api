@@ -7,6 +7,7 @@ from utils.models import BaseModel
 from utils.fields import LOCATION_DEFINITION_SCHEMA, JSONSchemaField
 from auditlog.registry import auditlog
 from django.db.models.signals import post_save
+from notifications.push import send_push_notification
 
 FEES_BREAKDOWN_SCHEMA = {
     "type": "object",
@@ -67,10 +68,15 @@ def post_save_order(sender, instance=None, created=False, **kwargs):
             # Send notification to the driver if order is assigned and ready to be delivered
             if instance.status == 'READY' and instance.assigned_rider:
                 send_sms_task(message=f'Wahawe komande nshya! Nomero ya komande: #{instance.reference_code}. Numero y\'umukiriya: {instance.customer.username}, aderesi: {instance.delivery_address.get("address")}', phone_numbers=[instance.assigned_rider.username])
-            
+                send_push_notification(subject=f'Komande nshya!', message=f'Wahawe komande nshya! Nomero ya komande: #{instance.reference_code}. Numero y\'umukiriya: {instance.customer.username}, aderesi: {instance.delivery_address.get("address")}', recipients=[instance.assigned_rider.username])
+                
             # Send notification to customer if order is on the way
             if instance.status == 'DELIVERING' and instance.assigned_rider:
                 send_sms_task(message=f'Your order from Best Pilau is on its way! {instance.assigned_rider.first_name} is delivering it. You can reach out at {instance.assigned_rider.username} if needed.', phone_numbers=[instance.customer.username])
+                send_push_notification(subject=f'Order on the way!', message=f'Your order from Best Pilau is on its way! {instance.assigned_rider.first_name} is delivering it. You can reach out at {instance.assigned_rider.username} if needed.', recipients=[instance.customer.username])
+                
+            if instance.status == 'PREPARING':
+                send_push_notification(subject=f'Order is being prepared!', message=f'Your order from Best Pilau is being prepared. It will be ready for delivery soon.', recipients=[instance.customer.username])
 
 
 

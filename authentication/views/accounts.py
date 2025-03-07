@@ -70,4 +70,18 @@ class UsersViewSet(ModelViewSet):
             
         return queryset
     
-
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        
+        username = request.data.get('username')
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
+            serializer = self.get_serializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        else:
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

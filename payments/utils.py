@@ -98,7 +98,7 @@ def handle_fdi_callback(data: dict):
                 phone_numbers.append(order.outlet.phone_number)
             
             send_sms_task(message=message, phone_numbers=phone_numbers)
-            push_notifications.send_order_notification(order)
+            push_notifications.send_workers_order_notification(order)
         else:
             order.status = 'CANCELLED'
             order.cancelled_reason = 'Payment failed: {}'.format(transaction_data.get('message', 'Unknown error'))
