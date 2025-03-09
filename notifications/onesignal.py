@@ -2,26 +2,36 @@ import os
 import requests
 
 
-NOTIFICATION_ONESIGNAL_APP_ID = os.getenv("NOTIFICATION_ONESIGNAL_APP_ID")
-NOTIFICATION_ONESIGNAL_APP_KEY = os.getenv("NOTIFICATION_ONESIGNAL_APP_KEY")
 
 
 class OneSignalClient:
     def __init__(self):
-        self.app_id = NOTIFICATION_ONESIGNAL_APP_ID
-        self.app_key = NOTIFICATION_ONESIGNAL_APP_KEY
+        self.ONESIGNAL_APPS = {
+            'RIDERS': {
+                'app_id': os.getenv("NOTIFICATION_ONESIGNAL_RIDERS_APP_ID"),
+                'app_key': os.getenv("NOTIFICATION_ONESIGNAL_RIDERS_APP_KEY")
+            },
+            'CUSTOMERS': {
+                'app_id': os.getenv("NOTIFICATION_ONESIGNAL_CUSTOMERS_APP_ID"),
+                'app_key': os.getenv("NOTIFICATION_ONESIGNAL_CUSTOMERS_APP_KEY")
+            },
+            'WORKERS': {
+                'app_id': os.getenv("NOTIFICATION_ONESIGNAL_WORKERS_APP_ID"),
+                'app_key': os.getenv("NOTIFICATION_ONESIGNAL_WORKERS_APP_KEY")
+            }
+        }
 
-    def send_notification(self, notification):
+    def send_notification(self, notification, app_name):
         """Send a notification via OneSignal API"""
         url = "https://api.onesignal.com/notifications?c=push"
         headers = {
-            "Authorization": f"{self.app_key}",
+            "Authorization": f"{self.ONESIGNAL_APPS[app_name]['app_key']}",
             "accept": "application/json",
             "content-type": "application/json"
         }
         
         payload = notification.to_dict()
-        payload['app_id'] = self.app_id
+        payload['app_id'] = self.ONESIGNAL_APPS[app_name]['app_id']
 
         response = requests.post(
             url,

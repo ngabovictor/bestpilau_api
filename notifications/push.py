@@ -41,12 +41,12 @@ def send_workers_order_notification(order):
         'customer_id': str(order.customer.id),
     })
 
-    response = onesignal_client.send_notification(notification)
+    response = onesignal_client.send_notification(notification, 'WORKERS')
 
     print(response)
 
 
-def send_push_notification(subject: str, message: str, recipients: list, actions: list = [], data: dict = {}):
+def send_push_notification(subject: str, message: str, recipients: list, app_name: str, actions: list = [], data: dict = {}):
     notification = Notification()
 
     notification.set_attribute('contents', {
@@ -68,6 +68,6 @@ def send_push_notification(subject: str, message: str, recipients: list, actions
     
     notification.set_attribute('data', data)
 
-    response = onesignal_client.send_notification(notification)
+    response = onesignal_client.send_notification(notification, app_name)
 
     print(response)
